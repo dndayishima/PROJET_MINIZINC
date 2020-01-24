@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/game1">
+        <file>game_1_mzn/1.dzn</file>
+        <file>game_1_mzn/1.mzn</file>
+    </qresource>
+</RCC>

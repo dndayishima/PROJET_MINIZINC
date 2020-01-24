@@ -1,0 +1,7 @@
+% Exemple du jeu des seaux
+
+seaux = {A,B,C};
+max_transferts = 10;
+capacite = [8,5,3];
+init     = [8,0,0];
+fin      = [4,4,0];

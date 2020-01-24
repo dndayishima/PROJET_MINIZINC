@@ -1,0 +1,5 @@
+# Ne pas mettre les builds sur Github
+build-MiniZinc-Desktop-Debug
+
+# compilation de Gecode
+script/gecode-release-6.1.0
