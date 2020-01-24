@@ -19,8 +19,8 @@ using namespace std;
 // Quelques variables stockées
 
 int nb_transferts = 0; // nb de transferts que l'utilisateur de doit pas dépasser
-int steps = 0; // nb de tours joués
-bool solvality_check_clicked = false; // on vérifie qu'on a pas encore appuyé sur le bouton "Tester la solvabilité"
+int steps_done = 0; // nb de tours joués
+//bool solvality_check_clicked = false; // on vérifie qu'on a pas encore appuyé sur le bouton "Tester la solvabilité"
 
 // ces données sont en brut mais pourraient être
 // bien lues depuis un fichier .dzn
@@ -36,15 +36,18 @@ int fin_capacity_sa = 4;
 int fin_capacity_sb = 4;
 int fin_capacity_sc = 0;
 
+// statut - en cours de transfert ou pas
+bool transfering = false;
+string transfert_src = "";
+
 // Les messages à afficher
 QString before_msg = "Appuyer d'abord sur \"TESTER LA SOLVABILITE\" !";
 string info_max_nb_transferts = "Nombre de transferts maximum : ";
 
 // Widgets de la fenêtre
-QLabel *message;
-QPushButton *seau_A;
-QPushButton *seau_B;
-QPushButton *seau_C;
+QLabel *message, *steps, *seau_A_contents, *seau_B_contents, *seau_C_contents;
+QLabel *max_seau_A, *max_seau_B, *max_seau_C;
+QPushButton *seau_A, *seau_B, *seau_C;
 
 jeux_des_seaux_deau::jeux_des_seaux_deau(QWidget *parent) :
     QDialog(parent),
@@ -68,6 +71,32 @@ void jeux_des_seaux_deau::init() {
 
     seau_C = ui->seau_C;
     seau_C->setEnabled(false);
+
+    // masquer les labels qui sont utilisés en cours de jeu
+    steps = ui->steps;
+    steps->hide();
+    seau_A_contents = ui->seau_A_contents;
+    seau_A_contents->hide();
+    seau_B_contents = ui->seau_B_contents;
+    seau_B_contents->hide();
+    seau_C_contents = ui->seau_C_contents;
+    seau_C_contents->hide();
+
+    // affichage des capacités maximales
+    max_seau_A = ui->max_seau_A;
+    ostringstream os_max_A;
+    os_max_A << "Max " << max_capacity_sa << " L";
+    max_seau_A->setText(QString::fromStdString(os_max_A.str()));
+
+    max_seau_B = ui->max_seau_B;
+    ostringstream os_max_B;
+    os_max_B << "Max " << max_capacity_sb << " L";
+    max_seau_B->setText(QString::fromStdString(os_max_B.str()));
+
+    max_seau_C = ui->max_seau_C;
+    ostringstream os_max_C;
+    os_max_C << "Max " << max_capacity_sc << " L";
+    max_seau_C->setText(QString::fromStdString(os_max_C.str()));
 }
 
 jeux_des_seaux_deau::~jeux_des_seaux_deau()
@@ -129,10 +158,9 @@ void jeux_des_seaux_deau::on_solvability_clicked()
     // on vérifie si le nb_transferts != 0
     // si c'est le cas, le joueur peut commencer à jouer
     if (nb_transferts != 0) {
-        cout << nb_transferts << endl;
         this->start_game();
     } else {
-
+        // dire que ce n'est pas satisfiable
     }
 }
 
@@ -150,6 +178,27 @@ void jeux_des_seaux_deau::start_game() {
     ostringstream os;
     os << info_max_nb_transferts << nb_transferts;
     message->setText(QString::fromStdString(os.str()));
+
+    // afficher les différents labels du jeu
+    ostringstream os_steps;
+    os_steps << steps_done;
+    steps->setText(QString::fromStdString(os_steps.str()));
+    steps->show();
+
+    ostringstream os_sa;
+    os_sa << capacity_sa << " L";
+    seau_A_contents->setText(QString::fromStdString(os_sa.str()));
+    seau_A_contents->show();
+
+    ostringstream os_sb;
+    os_sb << capacity_sb << " L";
+    seau_B_contents->setText(QString::fromStdString(os_sb.str()));
+    seau_B_contents->show();
+
+    ostringstream os_sc;
+    os_sc << capacity_sc << " L";
+    seau_C_contents->setText(QString::fromStdString(os_sc.str()));
+    seau_C_contents->show();
 }
 
 
@@ -162,3 +211,48 @@ void init_nb_transferts(string string) {
 }
 
 
+
+void jeux_des_seaux_deau::on_seau_A_clicked()
+{
+    if (!transfering) {
+        seau_A->setEnabled(false);
+        transfering = true;
+        transfert_src = "A";
+    }
+}
+
+void jeux_des_seaux_deau::on_seau_B_clicked()
+{
+    if (!transfering) {
+        seau_B->setEnabled(false);
+        transfering = true;
+        transfert_src = "B";
+    } else {
+        //transfert(transfert_src, "B");
+    }
+}
+
+void jeux_des_seaux_deau::on_seau_C_clicked()
+{
+
+}
+
+/*void jeux_des_seaux_deau::transfert(string src, string dest){
+    int *src_content;
+    int *dest_content;
+    int *dest_capacity;
+
+    if (src == "A") {
+        src_content = capacity_sa;
+        //src_content += 1;
+    }
+    if (src == "B") {
+        src_content = &capacity_sb;
+    }
+    if (src == "C") {
+        src_content = &capacity_sc;
+    }
+
+    cout << "src content " << src_content << endl;
+    //cout << "dest content " << dest << endl;
+}*/
