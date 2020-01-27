@@ -1,0 +1,12 @@
+% Exemple du jeu des moutons
+
+N = 3;
+max_etapes = 10;
+
+% BBB NNN
+% BB BNNN
+% BBNB NN
+% BBNBN N
+% BBN NBN
+% B NBNBN
+% BN BNBN

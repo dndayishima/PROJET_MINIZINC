@@ -1,0 +1,6 @@
+% Exemple du jeu des buffles et des lions
+
+NB = 3;
+NL = 3;
+
+max_transferts = 15;
