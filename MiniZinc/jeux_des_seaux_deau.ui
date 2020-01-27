@@ -117,7 +117,7 @@
    <property name="geometry">
     <rect>
      <x>560</x>
-     <y>520</y>
+     <y>490</y>
      <width>81</width>
      <height>81</height>
     </rect>
@@ -143,7 +143,7 @@
    <property name="geometry">
     <rect>
      <x>760</x>
-     <y>520</y>
+     <y>490</y>
      <width>81</width>
      <height>81</height>
     </rect>
@@ -198,7 +198,7 @@
    <property name="geometry">
     <rect>
      <x>360</x>
-     <y>520</y>
+     <y>490</y>
      <width>81</width>
      <height>81</height>
     </rect>
@@ -247,7 +247,7 @@
    <property name="geometry">
     <rect>
      <x>370</x>
-     <y>490</y>
+     <y>460</y>
      <width>67</width>
      <height>17</height>
     </rect>
@@ -270,7 +270,7 @@
    <property name="geometry">
     <rect>
      <x>570</x>
-     <y>490</y>
+     <y>460</y>
      <width>67</width>
      <height>17</height>
     </rect>
@@ -293,7 +293,7 @@
    <property name="geometry">
     <rect>
      <x>770</x>
-     <y>490</y>
+     <y>460</y>
      <width>67</width>
      <height>17</height>
     </rect>
@@ -316,7 +316,7 @@
    <property name="geometry">
     <rect>
      <x>370</x>
-     <y>610</y>
+     <y>580</y>
      <width>67</width>
      <height>17</height>
     </rect>
@@ -338,7 +338,7 @@
    <property name="geometry">
     <rect>
      <x>570</x>
-     <y>610</y>
+     <y>580</y>
      <width>67</width>
      <height>17</height>
     </rect>
@@ -360,7 +360,7 @@
    <property name="geometry">
     <rect>
      <x>770</x>
-     <y>610</y>
+     <y>580</y>
      <width>67</width>
      <height>17</height>
     </rect>
@@ -373,6 +373,48 @@
    </property>
    <property name="text">
     <string>Max</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QWidget" name="horizontalLayoutWidget_4">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>600</y>
+     <width>181</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <item>
+     <widget class="QPushButton" name="unselect">
+      <property name="text">
+       <string>Déselectionner</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="status_message">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>400</y>
+     <width>531</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Message victoire ou perte</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

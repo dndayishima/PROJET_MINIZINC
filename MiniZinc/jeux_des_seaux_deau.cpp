@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <stdlib.h>
 #include <stdio.h>
+#include <cmath>
 
 //#include <QDir>
 //#include <unistd.h>
@@ -20,7 +21,6 @@ using namespace std;
 
 int nb_transferts = 0; // nb de transferts que l'utilisateur de doit pas dépasser
 int steps_done = 0; // nb de tours joués
-//bool solvality_check_clicked = false; // on vérifie qu'on a pas encore appuyé sur le bouton "Tester la solvabilité"
 
 // ces données sont en brut mais pourraient être
 // bien lues depuis un fichier .dzn
@@ -46,8 +46,8 @@ string info_max_nb_transferts = "Nombre de transferts maximum : ";
 
 // Widgets de la fenêtre
 QLabel *message, *steps, *seau_A_contents, *seau_B_contents, *seau_C_contents;
-QLabel *max_seau_A, *max_seau_B, *max_seau_C;
-QPushButton *seau_A, *seau_B, *seau_C;
+QLabel *max_seau_A, *max_seau_B, *max_seau_C, *status_message;
+QPushButton *seau_A, *seau_B, *seau_C, *unselect;
 
 jeux_des_seaux_deau::jeux_des_seaux_deau(QWidget *parent) :
     QDialog(parent),
@@ -71,6 +71,9 @@ void jeux_des_seaux_deau::init() {
 
     seau_C = ui->seau_C;
     seau_C->setEnabled(false);
+
+    status_message = ui->status_message;
+    status_message->setVisible(false);
 
     // masquer les labels qui sont utilisés en cours de jeu
     steps = ui->steps;
@@ -97,6 +100,10 @@ void jeux_des_seaux_deau::init() {
     ostringstream os_max_C;
     os_max_C << "Max " << max_capacity_sc << " L";
     max_seau_C->setText(QString::fromStdString(os_max_C.str()));
+
+    // masquer le bouton déselectionner
+    unselect = ui->unselect;
+    unselect->setVisible(false);
 }
 
 jeux_des_seaux_deau::~jeux_des_seaux_deau()
@@ -218,6 +225,20 @@ void jeux_des_seaux_deau::on_seau_A_clicked()
         seau_A->setEnabled(false);
         transfering = true;
         transfert_src = "A";
+        unselect->setVisible(true);
+    } else {
+        // dans le cas où on fait le transfert
+        bool tr = false;
+        if (transfert_src == "B") {
+            tr = transfert(capacity_sb, capacity_sa, max_capacity_sa);
+        } else { // C
+            tr = transfert(capacity_sc, capacity_sa, max_capacity_sa);
+        }
+        if (tr) {
+            transfering= false;
+            transfert_src = "";
+            this->end_transfert();
+        }
     }
 }
 
@@ -227,32 +248,134 @@ void jeux_des_seaux_deau::on_seau_B_clicked()
         seau_B->setEnabled(false);
         transfering = true;
         transfert_src = "B";
+        unselect->setVisible(true);
     } else {
-        //transfert(transfert_src, "B");
+        // dans le cas où on fait le transfert
+        bool tr = false;
+        if (transfert_src == "A") {
+            tr = transfert(capacity_sa, capacity_sb, max_capacity_sb);
+        } else { // C
+            tr = transfert(capacity_sc, capacity_sb, max_capacity_sb);
+        }
+        if (tr) {
+            transfering= false;
+            transfert_src = "";
+            this->end_transfert();
+        }
     }
 }
 
 void jeux_des_seaux_deau::on_seau_C_clicked()
 {
-
+    if (!transfering) {
+        seau_C->setEnabled(false);
+        transfering = true;
+        transfert_src = "C";
+        unselect->setVisible(true);
+    } else {
+        // dans le cas où on fait le transfert
+        bool tr = false;
+        if (transfert_src == "A") {
+            tr = transfert(capacity_sa, capacity_sc, max_capacity_sc);
+        } else { // B
+            tr = transfert(capacity_sb, capacity_sc, max_capacity_sc);
+        }
+        if (tr) {
+            transfering= false;
+            transfert_src = "";
+            this->end_transfert();
+        }
+    }
 }
 
-/*void jeux_des_seaux_deau::transfert(string src, string dest){
-    int *src_content;
-    int *dest_content;
-    int *dest_capacity;
+void jeux_des_seaux_deau::end_transfert() {
+    // réactivation de tous les boutons
+    seau_A->setEnabled(true);
+    seau_B->setEnabled(true);
+    seau_C->setEnabled(true);
 
-    if (src == "A") {
-        src_content = capacity_sa;
-        //src_content += 1;
-    }
-    if (src == "B") {
-        src_content = &capacity_sb;
-    }
-    if (src == "C") {
-        src_content = &capacity_sc;
-    }
+    // Incrémentation de la valeur steps_done
+    steps_done += 1;
+    ostringstream os_sd;
+    os_sd << steps_done;
+    steps->setText(QString::fromStdString(os_sd.str()));
 
-    cout << "src content " << src_content << endl;
-    //cout << "dest content " << dest << endl;
-}*/
+    // Mise à jour de l'affichage des capacités
+    // pour chaque seau
+    ostringstream os_sa;
+    os_sa << capacity_sa << " L";
+    seau_A_contents->setText(QString::fromStdString(os_sa.str()));
+
+    ostringstream os_sb;
+    os_sb << capacity_sb << " L";
+    seau_B_contents->setText(QString::fromStdString(os_sb.str()));
+
+    ostringstream os_sc;
+    os_sc << capacity_sc << " L";
+    seau_C_contents->setText(QString::fromStdString(os_sc.str()));
+
+    // masquer le bouton de déselection
+    unselect->setVisible(false);
+
+    // vérification de la condition de victoire ou d'échec
+    if (fin_capacity_sa == capacity_sa && fin_capacity_sb == capacity_sb && fin_capacity_sc == capacity_sc) {
+        // on vient de gagner
+        // Gestion de l'affichage du message
+        status_message->setText("Félicitations, vous avez gagné !!!");
+        status_message->setVisible(true);
+        this->end_game();
+    } else {
+        if (nb_transferts <= steps_done) {
+            // perte
+            status_message->setText("Dommage, vous avez perdu !!!");
+            status_message->setVisible(true);
+            this->end_game();
+        }
+    }
+}
+
+void jeux_des_seaux_deau::on_unselect_clicked()
+{
+    // réactivation de tous les boutons
+    seau_A->setEnabled(true);
+    seau_B->setEnabled(true);
+    seau_C->setEnabled(true);
+    transfering = false;
+    transfert_src = "";
+    unselect->setVisible(false);
+}
+
+void jeux_des_seaux_deau::end_game() {
+    // on désactive tous les boutons
+    seau_A->setEnabled(false);
+    seau_B->setEnabled(false);
+    seau_C->setEnabled(false);
+
+    // désactivation du bouton unselect
+    unselect->setVisible(false);
+}
+
+bool transfert(int &capacite_src, int &capacite_dest, int &capacite_max_dest) {
+    if (capacite_src == 0) {
+        return false;
+    }
+    int cap_available = capacite_max_dest - capacite_dest;
+    if (cap_available == 0) {
+        // c'est déjà plein
+        return false;
+    }
+    if (capacite_src >= cap_available) {
+        // on prend la cap dispo
+        capacite_src -= cap_available;
+        capacite_dest += cap_available;
+        return true;
+    } else {
+        // on prend la cap de la source
+
+        capacite_dest += capacite_src;
+        capacite_src = 0;
+        return true;
+    }
+}
+
+
