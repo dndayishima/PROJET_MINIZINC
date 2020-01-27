@@ -14,6 +14,7 @@ class traversee_de_la_riviere : public QDialog
 public:
     explicit traversee_de_la_riviere(QWidget *parent = 0);
     ~traversee_de_la_riviere();
+    void init();
 
 private:
     Ui::traversee_de_la_riviere *ui;
