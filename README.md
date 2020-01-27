@@ -1,6 +1,9 @@
 # PROJET_MINIZINC
 Application QT faisant appel à un solver MiniZinc (Gecode).
 
+## Les modèles MiniZinc
+Les modèles `MiniZinc` se trouvent dans les répertoires du projet **MiniZinc/game_*_mzn**
+
 ## Installation de minizinc
 Cette application fait appel à la commande `minizinc`. Tout d'abord, vérifiez que vous avez cette commande sur votre poste.
 ```bash
